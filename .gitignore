@@ -1,6 +1,6 @@
 #Sasha's virtual env
 recipeEnv/
-
+RecipeApp/*.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

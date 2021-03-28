@@ -7,12 +7,11 @@ from ..models import Ingredient
 
 @csrf_exempt
 def ingredientRequest(request, ingredient_id=None):
-    	response_data = {'success': False, "error":"Unable to complete request"}
 	if request.method == "POST":
 		return createIngredient(request)
 	else:
 		return getIngredient(request, ingredient_id)
-	return HttpResponse(json.dumps(response_data), content_type="application/json")
+	return HttpResponse(json.dumps({'success': False, "error":"Unable to complete request"}), content_type="application/json")
 
 #Create Ingredient
 @csrf_exempt
@@ -32,9 +31,9 @@ def createIngredient(request):
 
 	if ingredient is None:
 		ingredient = Ingredient()
-	        ingredient.name = name
-	        ingredient.save()
-
+	
+	ingredient.name = name
+	ingredient.save()
 	response_data = ingredient.getResponseData()
 
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -49,7 +48,7 @@ def getIngredient(request, ingredient_id):
 
 		if len(ingredients)>0:
 			ingredient = ingredients[0]
-			response_data = chef.getResponseData()
+			response_data = ingredient.getResponseData()
 
 		else:
 			errorMessage = "Error! This ingredient doesn't exist."
