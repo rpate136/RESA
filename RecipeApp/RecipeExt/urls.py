@@ -18,7 +18,8 @@ urlpatterns = [
 
     #Ingredients
 	path('ingredient/', IngredientManager.ingredientRequest),     
-	path('ingredient/<int:ingredient_id>/', IngredientManager.ingredientRequest, name="ingredientRequest")
+	path('ingredient/<int:ingredient_id>/', IngredientManager.ingredientRequest, name="ingredientRequest"),
+	path('ingredient/temp/enteringredients/', IngredientManager.putIngredient)     
 
 	# Quantity
 ]

@@ -60,4 +60,20 @@ def getIngredient(request, ingredient_id):
 
 
 
+#Get Ingredient from dataset and put into Ingredients table
+@csrf_exempt
+def putIngredient(request):
 
+    #ingredient = None
+    f = open("/home/tripti/sofwareenggproject/RecipeAppBackend/RecipeApp/RecipeExt/manager/ingredients.txt","r")
+    ingredient_name = f.readline()
+    while ingredient_name:
+        ingredient_name = ingredient_name.rstrip()
+        ##put into Ingredients table
+        #if ingredient is None:
+        ingredient = Ingredient()
+        ingredient.name = ingredient_name
+        ingredient.save()
+        ingredient_name = f.readline()
+    f.close()
+    return HttpResponse(json.dumps({'success': True}), content_type="application/json")
