@@ -8,13 +8,19 @@ urlpatterns = [
 
 
     # API Interface
-        #Chefs
-	path('api/chef/', UserManager.chefRequest),     
-	path('api/chef/<int:chef_id>/', UserManager.chefRequest, name="chefRequest"),
+    # URL Format: 127.0.0.1:8000/api/____ 
+    # Eg. 127.0.0.1:8000/api/chef/1/ ----> GET Chef with ID 1 
+    
 
-        #Ingredients
-	path('api/ingredient/', IngredientManager.ingredientRequest),     
-	path('api/ingredient/<int:ingredient_id>/', IngredientManager.ingredientRequest, name="ingredientRequest")
+    #Chef - User Creation / Get User 
+	path('chef/', UserManager.chefRequest),     
+	path('chef/<int:chef_id>/', UserManager.chefRequest, name="chefRequest"),
+
+    #Ingredients
+	path('ingredient/', IngredientManager.ingredientRequest),     
+	path('ingredient/<int:ingredient_id>/', IngredientManager.ingredientRequest, name="ingredientRequest")
+
+	# Quantity
 ]
 
 

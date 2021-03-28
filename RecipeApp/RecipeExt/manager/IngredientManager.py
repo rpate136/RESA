@@ -13,10 +13,10 @@ def ingredientRequest(request, ingredient_id=None):
 		return getIngredient(request, ingredient_id)
 	return HttpResponse(json.dumps({'success': False, "error":"Unable to complete request"}), content_type="application/json")
 
-#Create Ingredient
+
+#Create New Ingredient
 @csrf_exempt
 def createIngredient(request):
-
 	name = request.POST.get('name', '')
 
 	ingredient = None
@@ -38,6 +38,8 @@ def createIngredient(request):
 
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
+
+#Get Ingredient by ID
 @csrf_exempt
 def getIngredient(request, ingredient_id):
 	response_data = {}
@@ -55,4 +57,7 @@ def getIngredient(request, ingredient_id):
 			response_data = {'success': False, "error":errorMessage}
 
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+
 

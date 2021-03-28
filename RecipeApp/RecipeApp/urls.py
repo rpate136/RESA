@@ -17,6 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('RecipeExt/', include('RecipeExt.urls')),
+    path('api/', include('RecipeExt.urls')),
     path('admin/', admin.site.urls),
+]
+
+#Add URL maps to redirect the base URL to our application
+from django.views.generic import RedirectView
+urlpatterns += [
+    path('', RedirectView.as_view(url='api/', permanent=True)),
 ]
