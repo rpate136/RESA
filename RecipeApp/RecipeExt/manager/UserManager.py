@@ -3,23 +3,42 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
 from ..models import Chef
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 
-# @csrf_exempt
-# def chefRequest(request, chef_id=None):
-# 	return HttpResponse(json.dumps({"success":True}), content_type="application/json")
+@csrf_exempt
+def chefLogin(request):
+	email = request.POST['email']
+	password = request.POST['password']
+	user = authenticate(request, username=email, password=password)
+
+	# # The Django auth backend authenticates the user
+	if user is not None:
+		login(request, user)
+		response_data = {'success':True, "message": "You have been successfully logge in, %s!"%(user.first_name)}
+	else:
+		# Return an 'invalid login' error message.
+		response_data = {'success':False, "message": "Either your email or password is incorrect, or doesn't exist in our system."}
+	
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+@csrf_exempt
+def chefLogout(request):
+	# The Django backend logs out the user
+    logout(request)
+
 
 @csrf_exempt
 def chefRequest(request, chef_id=None):
+	print(request.user, request.user.is_authenticated)
 	if request.method == "POST":
-		# errorMessage = "TODO POST"
-		# response_data = {'success': True, "error":errorMessage}
 		return createChef(request)
-		# return response_data 
+
 	else:
-		# errorMessage = "TODO GET"
-		# response_data = {'success': True, "error":errorMessage}
 		return getChef(request, chef_id)
+
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
@@ -30,23 +49,20 @@ def createChef(request):
 	first_name = request.POST.get('first_name', '')
 	last_name = request.POST.get('last_name', '')
 	email = request.POST.get('email', '')
+	password = request.POST.get('password', '')
+	about_me = request.POST.get('about_me', '')
+	location = request.POST.get('location', '')
 
-	chef = None
-	existing_chefs = Chef.objects.filter(email=email)
+	# username is the same as email 
+	user = User.objects.create_user(email, email, password)
+	user.first_name = first_name
+	user.last_name = last_name
 
-	if len(existing_chefs) > 0:
-		# chef Exists!
-		chef = existing_chefs[0]
-		errorMessage = "Error! Chef with this email already exists."
+	user.save()
 
-		return HttpResponse(json.dumps({'success': False, "error":errorMessage}), content_type="application/json")
-
-	if chef is None:
-		chef = Chef()
-	
-	chef.first_name = first_name
-	chef.last_name = last_name
-	chef.email = email
+	chef = Chef.objects.create(user=user)
+	chef.about_me = about_me
+	chef.location = location
 	chef.save()
 
 	response_data = chef.getResponseData()
@@ -60,7 +76,6 @@ def getChef(request, chef_id):
 	
 	if chef_id:
 		chefs = Chef.objects.filter(id=chef_id)
-		
 
 		if len(chefs)>0:
 			chef = chefs[0]

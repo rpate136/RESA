@@ -18,11 +18,12 @@ from django.urls import path, include
 
 urlpatterns = [
     path('api/', include('RecipeExt.urls')),
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls)
 ]
 
 #Add URL maps to redirect the base URL to our application
 from django.views.generic import RedirectView
 urlpatterns += [
     path('', RedirectView.as_view(url='api/', permanent=True)),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

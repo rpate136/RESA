@@ -1,29 +1,32 @@
 from django.db import models
-import json, re
+import json, re, datetime
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
+from django.contrib.auth.models import User
 
 
 # Create your models here.
 
 class Chef(models.Model):
-	first_name = models.CharField(max_length=50)
-	last_name = models.CharField(max_length=50)
-	email = models.CharField(max_length=50, unique=True)
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	about_me = models.TextField(max_length=500, blank=True)
+	location = models.CharField(max_length=30, blank=True)
 
 	def getResponseData(self):
 		responseData = {}
 		responseData["chef_id"]=self.id
-		responseData["first_name"]=self.first_name
-		responseData["last_name"]=self.last_name
-		responseData["email"]=self.email
+		responseData["first_name"]=self.user.first_name
+		responseData["last_name"]=self.user.last_name
+		responseData["email"]=self.user.email
+		responseData["about_me"]=self.about_me
+		responseData["location"]=self.location
 
 		return responseData
 
 	def __unicode__(self):
-		return "%s %s"%(self.first_name,self.last_name)
+		return "%s %s"%(self.user.first_name,self.user.last_name)
 
 	def __str__(self):
-		return "%s %s"%(self.first_name,self.last_name)
+		return "%s %s"%(self.user.first_name,self.user.last_name)
 
 	def __hash__(self):
 		return self.id
@@ -36,10 +39,12 @@ class Chef(models.Model):
 	# 	return reverse('chef-detail', args=[str(self.id)])
 
 	class Meta:
-		ordering = ('first_name',)
+		ordering = ('user',)
 
 
 class Ingredient(models.Model):
+
+	# eg. name from Spoonacular -- cocoa powder
 	name = models.CharField(max_length=50, unique=True)
 
 	def getResponseData(self):
@@ -79,22 +84,35 @@ class Recipe(models.Model):
 	source = models.URLField(max_length=100, blank=True) 
 
 	# Check whether we need to not delete
-	author = models.ForeignKey(Chef, on_delete=models.CASCADE)
+	chef = models.ForeignKey(Chef, on_delete=models.CASCADE)
 
 	def getResponseData(self):
 		responseData = {}
-		responseData["ingredient_id"] = self.id
+		responseData["recipe_id"] = self.id
 		responseData["title"] = self.title
-		responseData["ingredients"] = self.ingredients
 		responseData["directions"] = self.directions
-		responseData["prep_time"] = self.prep_time
-		responseData["cook_time"] = self.cook_time
-		responseData["total_time"] = self.total_time
 		responseData["serving_size"] = self.serving_size
 		responseData["nutritional_info"] = self.nutritional_info
 		responseData["thumbnail_url"] = self.thumbnail_url
 		responseData["source"] = self.source
-		responseData["author"] = self.author
+		responseData["chef_id"] = "%s"%(self.chef.id)
+
+		responseData["prep_time"] = str(self.prep_time)
+		responseData["cook_time"] = str(self.cook_time)
+		responseData["total_time"] = str(self.total_time)
+
+		ingredients = []
+		_ingredientsList = RecipeIngredient.objects.filter(recipe=self)
+		for eachIngredient in _ingredientsList: 
+			ingredient = {}
+			ingredient['name'] = eachIngredient.ingredient.name
+			ingredient['ingredient_string'] = eachIngredient.ingredient_string
+			ingredient['quantity'] = eachIngredient.quantity
+			ingredient['unit'] = eachIngredient.unit
+			ingredient['available'] = eachIngredient.available
+			ingredients.append(ingredient)
+
+		responseData["ingredients"] = ingredients
 
 		return responseData
 
@@ -121,7 +139,11 @@ class Recipe(models.Model):
 class RecipeIngredient(models.Model):
 	recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 	ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+	
+	# Original ingredient string: eg. 1 cup of good quality cocoa powder, sifted
 	ingredient_string = models.CharField(max_length=50)
+	quantity = models.CharField(max_length=50)
+	unit = models.CharField(max_length=10)
 
 	# If available=false --> show in grocery list
 	available = models.BooleanField(default=True)
@@ -156,33 +178,4 @@ class RecipeIngredient(models.Model):
 
 	class Meta:
 		ordering = ('recipe', 'ingredient')
-
-
-# class Quantity(models.Model):
-# 	"""Quantities of Ingredients:
-# 	eg. cup, tsp, tbsp, etc. 
-# 	""" 
-# 	name = models.CharField(max_length=50)
-
-# 	def getResponseData(self):
-# 		responseData = {}
-# 		responseData["quantity_id"]=self.id
-# 		responseData["name"]=self.name
-
-# 		return responseData
-
-# 	def __unicode__(self):
-# 		return "%s"%(self.name)
-
-# 	def __str__(self):
-# 		return "%s"%(self.name)
-
-# 	def __hash__(self):
-#             	return self.id
-
-# 	def __cmp__(self, other):
-# 		return self.id - other.id
-
-# 	class Meta:
-# 		ordering = ('name',)
 
