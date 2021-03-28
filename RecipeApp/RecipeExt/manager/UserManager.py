@@ -27,8 +27,6 @@ def chefRequest(request, chef_id=None):
 @csrf_exempt
 def createChef(request):
 
-	print("Sasha ---> ", request.POST)
-
 	first_name = request.POST.get('first_name', '')
 	last_name = request.POST.get('last_name', '')
 	email = request.POST.get('email', '')
@@ -37,19 +35,18 @@ def createChef(request):
 	existing_chefs = Chef.objects.filter(email=email)
 
 	if len(existing_chefs) > 0:
-		# chef Exists!
-		chef = existing_chefs[0]
-		errorMessage = "Error! Chef with this email already exists."
+                # chef Exists!
+	        chef = existing_chefs[0]
+	        errorMessage = "Error! Chef with this email already exists."
 
-		return HttpResponse(json.dumps({'success': False, "error":errorMessage}), content_type="application/json")
+	        return HttpResponse(json.dumps({'success': False, "error":errorMessage}), content_type="application/json")
 
 	if chef is None:
-		chef = Chef()
-
-	chef.first_name = first_name
-	chef.last_name = last_name
+                chef = Chef()
+        
+        chef.first_name = first_name
+        chef.last_name = last_name
 	chef.email = email
-	
 	chef.save()
 
 	response_data = chef.getResponseData()
