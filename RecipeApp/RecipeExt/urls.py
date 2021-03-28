@@ -1,7 +1,5 @@
 from django.urls import path
-
 from . import views
-
 from .manager import UserManager
 
 urlpatterns = [
@@ -10,6 +8,8 @@ urlpatterns = [
 
 
     # API Interface
-    path(r'^api/chef/$', UserManager.chefRequest),     
-	path(r'^api/chef/(?P<chef_id>\d*)/$', UserManager.chefRequest)
+	path('api/chef/', UserManager.chefRequest),     
+	# path(r'api/chef/(?P<chef_id>\d*)/$', UserManager.chefRequest)
+
+	path('api/chef/<int:chef_id>/', UserManager.chefRequest, name="chefRequest")
 ]

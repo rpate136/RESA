@@ -26,9 +26,12 @@ def chefRequest(request, chef_id=None):
 # Creating new chef
 @csrf_exempt
 def createChef(request):
-	first_name = request.POST.get('first_name','')
-	last_name = request.POST.get('last_name','')
-	email = request.POST.get('email','')
+
+	print("Sasha ---> ", request.POST)
+
+	first_name = request.POST.get('first_name', '')
+	last_name = request.POST.get('last_name', '')
+	email = request.POST.get('email', '')
 
 	chef = None
 	existing_chefs = Chef.objects.filter(email=email)
