@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from ..models import Chef
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 
 @csrf_exempt
@@ -16,7 +16,7 @@ def chefLogin(request):
 	# # The Django auth backend authenticates the user
 	if user is not None:
 		login(request, user)
-		response_data = {'success':True, "message": "You have been successfully logge in, %s!"%(user.first_name)}
+		response_data = {'success':True, "message": "You have been successfully logged in, %s!"%(user.first_name)}
 	else:
 		# Return an 'invalid login' error message.
 		response_data = {'success':False, "message": "Either your email or password is incorrect, or doesn't exist in our system."}
@@ -28,11 +28,14 @@ def chefLogin(request):
 def chefLogout(request):
 	# The Django backend logs out the user
     logout(request)
+    response_data = {'success':True, "message": "You have been successfully logged out!"}
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
+# Registers a new chef
 @csrf_exempt
 def chefRequest(request, chef_id=None):
-	print(request.user, request.user.is_authenticated)
+	print("Internal Log: ", request.user, request.user.is_authenticated)
 	if request.method == "POST":
 		return createChef(request)
 
@@ -42,7 +45,7 @@ def chefRequest(request, chef_id=None):
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
-# Creating new chef
+# Registering a new chef
 @csrf_exempt
 def createChef(request):
 

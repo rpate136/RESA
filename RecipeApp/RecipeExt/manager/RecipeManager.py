@@ -110,15 +110,13 @@ def createRecipe(request):
 @csrf_exempt
 def getRecipe(request, recipe_id):
 	response_data = {}
-	print("Current User: ", request.user)
-	print("Current User: ", request.user.is_authenticated)
 	
 	if recipe_id:
 		recipes = Recipe.objects.filter(id=recipe_id)
 
 		if len(recipes)>0:
 			recipe = recipes[0]
-			response_data = recipes.getResponseData()
+			response_data = recipe.getResponseData()
 
 		else:
 			errorMessage = "Error! This recipe doesn't exist."

@@ -1,5 +1,11 @@
 #Sasha's virtual env
 recipeEnv/
+
+#Tripti's virtual env
+tutorial-env/
+
+
+# Database
 RecipeApp/*.sqlite3
 
 # Byte-compiled / optimized / DLL files
