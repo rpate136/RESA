@@ -1,3 +1,25 @@
+# How to run
+
+## One-time Installation
+* Install Python3, Pip3, Virtualenv 
+* Clone this git. cd into RecipeAppBackend and start Virtualenv
+* pip install Django
+* Install postgresql
+* pip install psycopg2
+    * If you get a psycopg2 PATH error:
+        * sudo find / -name pg_config
+        * export PATH=<path>:$PATH
+* pip install -r requirements.txt
+
+## To run everytime
+* cd RecipeApp (you should be able to see manage.py)
+* python manage.py makemigrations
+* python manage.py migrate
+* python manage.py runserver
+
+## NOTE
+* Add your Virtualenv to gitignore
+
 # API Endpoints
 
 ## User 
